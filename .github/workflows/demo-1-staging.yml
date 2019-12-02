@@ -1,4 +1,4 @@
-name: NETLIFY DEPLOYMENT DEVELOP 1
+name: NETLIFY DEMO 1 STAGING
 
 on:
   push:
@@ -21,4 +21,4 @@ jobs:
       run: |
         yarn
         yarn build:demo1
-        npx netlify-cli deploy --dir=demo1/dist --message='deployment for ${{ $GITHUB_REF }}' --prod
+        npx netlify-cli deploy --dir=demo1/dist --message='staging' --prod

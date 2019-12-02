@@ -1,11 +1,6 @@
-name: NETLIFY DEMO 1 DEPLOYMENT
+name: NETLIFY DEMO 1 FEATURE
 
 on:
-  push:
-    branches:
-      - develop
-    paths:
-      - demo1/**
   pull_request:
     paths:
       - demo1/**
@@ -24,4 +19,4 @@ jobs:
       run: |
         yarn
         yarn build:demo1
-        npx netlify-cli deploy --dir=demo1/dist --message='deployment for ${{ $GITHUB_REF }}'
+        npx netlify-cli deploy --dir=demo1/dist --message='feature'
