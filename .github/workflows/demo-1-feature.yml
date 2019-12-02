@@ -2,7 +2,7 @@ name: NETLIFY DEMO 1 DEPLOYMENT
 
 on:
   push:
-    branches: 
+    branches:
       - develop
     paths:
       - demo1/**
