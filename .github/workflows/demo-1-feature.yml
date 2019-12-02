@@ -1,17 +1,55 @@
 name: NETLIFY DEMO 1 FEATURE
 
 on:
-  pull_request:
+  push:
+    branches:
+      - task/SDA-**
     paths:
       - demo1/**
 
 jobs:
   build:
+    # env:
+    #   JIRA_ID: ""
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v1
+    - name: echo git_branch
+      run: |
+        # export JIRA_ID=$(echo $GITHUB_REF | grep -o -E 'SDA-[0-9]+' | grep -o -E '[0-9]+')
+    - name: push JIRA comment
+      run: |
+        # echo JIRA_ID
+        # curl --request POST \
+        #   --url 'https://aharooms.atlassian.net/rest/api/3/issue/SDA-${{ JIRA_ID }}/comment' \
+        #   --user 'tech@aharooms.com:${{ secrets.JIRA_AUTH_TOKEN }}' \
+        #   --header 'Accept: application/json' \
+        #   --header 'Content-Type: application/json' \
+        #   --data '{
+        #   "visibility": {
+        #     "type": "role",
+        #     "value": "Administrators"
+        #   },
+        #   "body": {
+        #     "type": "doc",
+        #     "version": 1,
+        #     "content": [
+        #       {
+        #         "type": "paragraph",
+        #         "content": [
+        #           {
+        #             "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eget venenatis elit. Duis eu justo eget augue iaculis fermentum. Sed semper quam laoreet nisi egestas at posuere augue semper.",
+        #             "type": "text"
+        #           }
+        #         ]
+        #       }
+        #     ]
+        #   }
+        # }
+
+
     - name: netlify deployment
       env:
         NETLIFY_SITE_ID: ${{ secrets.DEMO1_SITE_ID }}

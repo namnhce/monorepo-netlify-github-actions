@@ -14,6 +14,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - name: echo git_branch
+      run: |
+        echo $GITHUB_REF
     - name: netlify deployment
       env:
         NETLIFY_SITE_ID: ${{ secrets.DEMO1_SITE_ID }}
