@@ -1,6 +1,11 @@
 name: NETLIFY DEMO 1 DEPLOYMENT
 
 on:
+  push:
+    branches: 
+      - develop
+    paths:
+      - demo1/**
   pull_request:
     paths:
       - demo1/**
