@@ -9,8 +9,9 @@ on:
 
 jobs:
   build:
-    # env:
-    #   JIRA_ID: ""
+    env:
+      JIRA_ISSUE_ID: ""
+      DEPLOY_PREVIEW_URL: ""
 
     runs-on: ubuntu-latest
 
@@ -18,38 +19,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: echo git_branch
       run: |
-        # export JIRA_ID=$(echo $GITHUB_REF | grep -o -E 'SDA-[0-9]+' | grep -o -E '[0-9]+')
-    - name: push JIRA comment
-      run: |
-        # echo JIRA_ID
-        # curl --request POST \
-        #   --url 'https://aharooms.atlassian.net/rest/api/3/issue/SDA-${{ JIRA_ID }}/comment' \
-        #   --user 'tech@aharooms.com:${{ secrets.JIRA_AUTH_TOKEN }}' \
-        #   --header 'Accept: application/json' \
-        #   --header 'Content-Type: application/json' \
-        #   --data '{
-        #   "visibility": {
-        #     "type": "role",
-        #     "value": "Administrators"
-        #   },
-        #   "body": {
-        #     "type": "doc",
-        #     "version": 1,
-        #     "content": [
-        #       {
-        #         "type": "paragraph",
-        #         "content": [
-        #           {
-        #             "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eget venenatis elit. Duis eu justo eget augue iaculis fermentum. Sed semper quam laoreet nisi egestas at posuere augue semper.",
-        #             "type": "text"
-        #           }
-        #         ]
-        #       }
-        #     ]
-        #   }
-        # }
-
-
+        echo "::set-env name=JIRA_ISSUE_ID::$(echo $GITHUB_REF | grep -o -E 'SDA-[0-9]+' | grep -o -E '[0-9]+')"
     - name: netlify deployment
       env:
         NETLIFY_SITE_ID: ${{ secrets.DEMO1_SITE_ID }}
@@ -57,4 +27,37 @@ jobs:
       run: |
         yarn
         yarn build:demo1
-        npx netlify-cli deploy --dir=demo1/dist --message='feature'
+        echo "::set-env name=DEPLOY_PREVIEW_URL::$(npx netlify-cli deploy --dir=demo1/dist --message='feature $GITHUB_REF'| grep "Live Draft URL" |  grep -o -E 'https?://[^ ]+' )"
+
+    - name: push JIRA comment
+      run: |
+        echo $JIRA_ISSUE_ID
+        echo $DEPLOY_PREVIEW_URL
+        curl --request POST \
+          --url 'https://aharooms.atlassian.net/rest/api/3/issue/SDA-${{ env.JIRA_ISSUE_ID }}/comment' \
+          --user 'tech@aharooms.com:${{ secrets.JIRA_AUTH_TOKEN }}' \
+          --header 'Accept: application/json' \
+          --header 'Content-Type: application/json' \
+          --data '{
+                    "visibility": {
+                        "type": "role",
+                        "value": "Administrators"
+                    },
+                    "body": {
+                        "type": "doc",
+                        "version": 1,
+                        "content": [{
+                            "type": "paragraph",
+                            "content": [{
+                                "text": "Preview Deploy SDA-${{ env.JIRA_ISSUE_ID }}",
+                                "type": "text",
+                                "marks": [{
+                                    "type": "link",
+                                    "attrs": {
+                                        "href": "${{env.DEPLOY_PREVIEW_URL}}"
+                                    }
+                                }]
+                            }]
+                        }]
+                    }
+                }'
